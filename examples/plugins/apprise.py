@@ -29,6 +29,7 @@ variables which should be placed in /etc/apt/apt.conf.d/51uu-apprise.
 
 import apt_pkg
 import json
+import re
 
 import logging
 import logging.handlers
@@ -155,12 +156,20 @@ class UnattendedUpgradesPluginApprise:
             for url in self.webhooks:
                 apobj.add(url)
 
+            payload = json.loads(payload)
+            del payload['plugin-api']
+            del payload['hostname']
+            del payload['success']
+            del payload['log-dpkg']
+            del payload['log-unattended-upgrades']
+            payload = json.dumps(payload, indent=4)
+            payload = re.sub(r'["{}]', '', payload)
+            payload = re.sub(r'\\n', '\n', payload)
+            payload = re.sub(r' {4}', '', payload)
+            payload = re.sub(r'result-str: ', '', payload)
             # Then notify these services any time you desire. The below would
             # notify all of the services loaded into our Apprise object.
-            apobj.notify(
-                body=payload,
-                title='Unattended-Upgrades',
-            )
+            apobj.notify(payload)
         else:
             # TODO 20230105 Maybe we want to actually do something if its false
             pass
