@@ -163,7 +163,7 @@ class UnattendedUpgradesPluginApprise:
             del payload['log-dpkg']
             del payload['log-unattended-upgrades']
             payload = json.dumps(payload, indent=4)
-            payload = re.sub(r'["{}]', '', payload)
+            payload = re.sub(r'["{},]', '', payload)
             payload = re.sub(r'\\n', '\n', payload)
             payload = re.sub(r' {4}', '', payload)
             payload = re.sub(r'result-str: ', '', payload)
