@@ -168,7 +168,7 @@ class PluginManager:
                     assert isinstance(plugin_spec.loader, Loader)
                     plugin_spec.loader.exec_module(mod)
                 except Exception as e:
-                    logging.warn("cannot load plugin %s", e)
+                    logging.warning("cannot load plugin %s", e)
                     continue
                 for __, member in inspect.getmembers(mod):
                     # required class name prefix
@@ -197,7 +197,7 @@ class PluginManager:
         kept_back = set()
         # XXX: add "package-kept-back-details" only if someone asks (YAGNI)
         kept_back_details = []
-        for origin, origin_pkgs in res.pkgs_kept_back.items():
+        for origin, origin_pkgs in res.pkgs_kept_back:
             for pkg in origin_pkgs:
                 kept_back.add(pkg)
                 kept_back_details.append({"package": pkg, "origin": origin})
