@@ -1,4 +1,3 @@
-
 #!/usr/bin/python3
 
 import os
@@ -53,7 +52,17 @@ Version: 1.0
 Package: linux-image-4.05.0-1021-kvm
 Status: install ok installed
 Architecture: all
-Version: 1.0
+Version: 1.21
+
+Package: linux-image-4.05.0-1022-kvm
+Status: install ok installed
+Architecture: all
+Version: 1.22
+
+Package: linux-image-4.05.0-1023-kvm
+Status: install ok installed
+Architecture: all
+Version: 1.23
 
 Package: z-package
 Status: install ok installed
@@ -168,6 +177,27 @@ Unattended-Upgrade::Skip-Updates-On-Metered-Connections "false";
             self.assertFalse(needle_kernel_bad in haystack,
                              "Found '%s' in '%s'" % (needle_kernel_bad,
                                                      haystack))
+
+    def test_remove_valid(self):
+        cache = unattended_upgrade.UnattendedUpgradesCache(
+            rootdir=self.rootdir)
+        auto_removable = unattended_upgrade.get_auto_removable(cache)
+        print(auto_removable)
+        cache["old-unused-dependency"].mark_delete()
+        res = unattended_upgrade.is_autoremove_valid(
+            cache, "test-package-dependency", auto_removable)
+        self.assertTrue(res, "Simple autoremoval set is not valid")
+
+        res = unattended_upgrade.is_autoremove_valid(
+            cache, "test-package-dependency", set())
+        self.assertFalse(res, "Autoremoving non-autoremovable package")
+
+        cache["forbidden-dependency"].mark_install()
+        auto_removable.add("forbidden-dependency")
+        res = unattended_upgrade.is_autoremove_valid(
+            cache, "test-package-dependency", auto_removable)
+        self.assertFalse(
+            res, "Package set to reinstall in cache is reinstalled")
 
 
 if __name__ == "__main__":
