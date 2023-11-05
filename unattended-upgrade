@@ -180,7 +180,7 @@ class PluginManager:
                     assert isinstance(plugin_spec.loader, Loader)
                     plugin_spec.loader.exec_module(mod)
                 except Exception as e:
-                    logging.warn("cannot load plugin %s", e)
+                    logging.warning("cannot load plugin %s", e)
                     continue
                 for __, member in inspect.getmembers(mod):
                     # required class name prefix
@@ -1565,7 +1565,7 @@ def send_summary_mail(pkgs,                 # type: List[str]
             machine=host(), result="SUCCESS" if res else "FAILURE").strip()
     body = wrap_indent(_("Unattended upgrade result: %s") % result_str)
     body += "\n\n"
-
+    if reboot_required():
         body += _(
             "Warning: A reboot is required to complete this upgrade, "
             "or a previous one.\n\n")
